@@ -4,7 +4,6 @@ import {
   IconButton,
   Box,
   Menu,
-  Avatar,
 } from '@chakra-ui/react'
 import { Bell, LogOut, Moon, Sun, User, ChevronDown } from 'lucide-react'
 import { useColorMode } from '@/hooks/useColorMode'
@@ -28,6 +27,13 @@ export function Navbar({ sidebarCollapsed, title }: NavbarProps) {
   const { colorMode, toggleColorMode } = useColorMode()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+
+  const initials = user?.name
+    ?.split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('') ?? '?'
 
   const handleLogout = () => {
     logout()
@@ -117,16 +123,24 @@ export function Navbar({ sidebarCollapsed, title }: NavbarProps) {
               _hover={{ bg: 'gray.100', _dark: { bg: 'whiteAlpha.80' } }}
               transition="background 0.15s"
             >
-              <Avatar.Root size="sm" flexShrink={0}>
-                <Avatar.Fallback
-                  bg="blue.600"
-                  color="white"
-                  fontSize="xs"
-                  fontWeight="700"
-                >
-                  {user?.name?.slice(0, 2).toUpperCase()}
-                </Avatar.Fallback>
-              </Avatar.Root>
+              <Flex
+                w="32px"
+                h="32px"
+                borderRadius="lg"
+                align="center"
+                justify="center"
+                flexShrink={0}
+                style={{
+                  background: '#1e293b',
+                  color: '#94a3b8',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  letterSpacing: '0.02em',
+                  userSelect: 'none',
+                }}
+              >
+                {initials}
+              </Flex>
               <Box display={{ base: 'none', md: 'block' }}>
                 <Text fontSize="sm" fontWeight="600" lineHeight="1.2" color="gray.800" _dark={{ color: 'gray.100' }} letterSpacing="-0.01em">
                   {user?.name}

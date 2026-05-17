@@ -1,4 +1,4 @@
-import { Box, Flex, Text, VStack, Separator, Avatar, IconButton, Tooltip } from '@chakra-ui/react'
+import { Box, Flex, Text, IconButton, Tooltip } from '@chakra-ui/react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -45,28 +45,28 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Financeiro',
     items: [
-      { label: 'Contas a Pagar',   to: '/contas-pagar',   icon: CreditCard,     roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Contas a Receber', to: '/contas-receber', icon: TrendingUp,      roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Fluxo de Caixa',   to: '/fluxo-caixa',   icon: ArrowLeftRight,  roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Conciliação',      to: '/conciliacao',    icon: Landmark,        roles: ['admin', 'financeiro'] },
+      { label: 'Contas a Pagar',   to: '/contas-pagar',   icon: CreditCard,    roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Contas a Receber', to: '/contas-receber', icon: TrendingUp,     roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Fluxo de Caixa',   to: '/fluxo-caixa',   icon: ArrowLeftRight, roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Conciliação',      to: '/conciliacao',    icon: Landmark,       roles: ['admin', 'financeiro'] },
     ],
   },
   {
     title: 'Cadastros',
     items: [
-      { label: 'Clientes',         to: '/clientes',       icon: UserCheck,       roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Fornecedores',     to: '/fornecedores',   icon: Building2,       roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Empresas',         to: '/empresas',       icon: Landmark,        roles: ['admin'] },
-      { label: 'Centros de Custo', to: '/centros-custo',  icon: Tags,            roles: ['admin', 'financeiro'] },
-      { label: 'Categorias',       to: '/categorias',     icon: Tags,            roles: ['admin', 'financeiro'] },
+      { label: 'Clientes',         to: '/clientes',      icon: UserCheck, roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Fornecedores',     to: '/fornecedores',  icon: Building2, roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Empresas',         to: '/empresas',      icon: Landmark,  roles: ['admin'] },
+      { label: 'Centros de Custo', to: '/centros-custo', icon: Tags,      roles: ['admin', 'financeiro'] },
+      { label: 'Categorias',       to: '/categorias',    icon: Tags,      roles: ['admin', 'financeiro'] },
     ],
   },
   {
     title: 'Corporativo',
     items: [
-      { label: 'Reembolsos',  to: '/reembolsos',  icon: Wallet,         roles: ['admin', 'financeiro', 'gestor', 'rh'] },
-      { label: 'Aprovações',  to: '/aprovacoes',  icon: ClipboardCheck, roles: ['admin', 'financeiro', 'gestor'] },
-      { label: 'Relatórios',  to: '/relatorios',  icon: FileText,       roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Reembolsos', to: '/reembolsos', icon: Wallet,         roles: ['admin', 'financeiro', 'gestor', 'rh'] },
+      { label: 'Aprovações', to: '/aprovacoes', icon: ClipboardCheck, roles: ['admin', 'financeiro', 'gestor'] },
+      { label: 'Relatórios', to: '/relatorios', icon: FileText,       roles: ['admin', 'financeiro', 'gestor'] },
     ],
   },
   {
@@ -87,6 +87,9 @@ const ROLE_LABELS: Record<string, string> = {
   visualizador: 'Visualizador',
 }
 
+const HEADER_H = 64
+const FOOTER_H = 60
+
 interface SidebarProps {
   isCollapsed: boolean
   onToggle: () => void
@@ -106,53 +109,61 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     return location.pathname.startsWith(to)
   }
 
+  const initials = user?.name
+    ?.split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('') ?? '?'
+
   return (
-    <Flex
+    <Box
       as="nav"
-      direction="column"
       position="fixed"
       left={0}
       top={0}
       bottom={0}
       w={isCollapsed ? '68px' : '260px'}
-      bg="sidebar.bg"
-      borderRight="1px solid"
-      borderColor="whiteAlpha.50"
-      transition="width 0.22s cubic-bezier(.4,0,.2,1)"
       zIndex={100}
-      overflow="hidden"
+      transition="width 0.22s cubic-bezier(.4,0,.2,1)"
+      style={{
+        background: '#111827',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+      }}
     >
-      {/* Logo */}
+      {/* ── Header (logo + toggle) ── */}
       <Flex
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        h={`${HEADER_H}px`}
         align="center"
         justify={isCollapsed ? 'center' : 'space-between'}
         px={isCollapsed ? 0 : 4}
-        h="64px"
-        borderBottom="1px solid"
-        borderColor="whiteAlpha.50"
-        flexShrink={0}
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
         {!isCollapsed && (
           <Flex align="center" gap={2.5}>
             <Flex
-              w={8}
-              h={8}
-              bgGradient="to-br"
-              gradientFrom="blue.500"
-              gradientTo="blue.700"
+              w="32px"
+              h="32px"
               borderRadius="lg"
               align="center"
               justify="center"
-              boxShadow="0 2px 8px rgba(59,130,246,0.4)"
               flexShrink={0}
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                boxShadow: '0 2px 8px rgba(59,130,246,0.4)',
+              }}
             >
-              <Receipt size={16} color="white" />
+              <Receipt size={15} color="white" />
             </Flex>
             <Box>
-              <Text fontWeight="700" fontSize="sm" color="white" letterSpacing="tight" lineHeight="1.1">
+              <Text fontSize="sm" fontWeight="700" letterSpacing="-0.02em" lineHeight="1.15" style={{ color: '#fff' }}>
                 FinanceFlow
               </Text>
-              <Text fontSize="9px" color="whiteAlpha.400" letterSpacing="widest" textTransform="uppercase" lineHeight="1.2">
+              <Text fontSize="9px" fontWeight="600" letterSpacing="0.12em" textTransform="uppercase" lineHeight="1.2" style={{ color: 'rgba(255,255,255,0.28)' }}>
                 Sistema Financeiro
               </Text>
             </Box>
@@ -163,23 +174,33 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
           variant="ghost"
           size="sm"
-          color="whiteAlpha.400"
           onClick={onToggle}
-          _hover={{ bg: 'whiteAlpha.100', color: 'white' }}
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+          _hover={{ bg: 'rgba(255,255,255,0.06)' } as object}
         >
           {isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
         </IconButton>
       </Flex>
 
-      {/* Nav */}
-      <VStack
-        flex={1}
+      {/* ── Scrollable nav area ── */}
+      <Box
+        position="absolute"
+        top={`${HEADER_H}px`}
+        bottom={`${FOOTER_H}px`}
+        left={0}
+        right={0}
         overflowY="auto"
         overflowX="hidden"
-        py={3}
-        gap={0}
-        align="stretch"
-        css={{ '&::-webkit-scrollbar': { width: '3px' } }}
+        py={2}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255,255,255,0.12) transparent',
+        }}
+        css={{
+          '&::-webkit-scrollbar': { width: '4px' },
+          '&::-webkit-scrollbar-track': { background: 'transparent' },
+          '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.12)', borderRadius: '10px' },
+        }}
       >
         {NAV_GROUPS.map((group) => {
           const visibleItems = group.items.filter((item) => canAccess(item.roles))
@@ -190,19 +211,19 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               {!isCollapsed && group.title && (
                 <Text
                   px={4}
-                  pt={3}
-                  pb={1.5}
-                  fontSize="9px"
+                  pt={4}
+                  pb={1}
+                  fontSize="10px"
                   fontWeight="700"
-                  color="whiteAlpha.300"
-                  letterSpacing="widest"
+                  letterSpacing="0.1em"
                   textTransform="uppercase"
+                  style={{ color: 'rgba(255,255,255,0.28)' }}
                 >
                   {group.title}
                 </Text>
               )}
               {isCollapsed && group.title && (
-                <Separator borderColor="whiteAlpha.50" my={2} mx={3} />
+                <Box my={2} mx={3} h="1px" style={{ background: 'rgba(255,255,255,0.06)' }} />
               )}
 
               {visibleItems.map((item) => {
@@ -210,33 +231,38 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 const active = isActive(item.to)
 
                 const navItem = (
-                  <NavLink to={item.to} style={{ textDecoration: 'none' }}>
+                  <NavLink to={item.to} style={{ textDecoration: 'none', display: 'block' }}>
                     <Flex
                       align="center"
                       gap={3}
                       mx={2}
                       px={isCollapsed ? 0 : '10px'}
                       py="9px"
-                      borderRadius="lg"
+                      borderRadius="10px"
                       justify={isCollapsed ? 'center' : 'flex-start'}
-                      bg={active ? 'rgba(59,130,246,0.12)' : 'transparent'}
-                      color={active ? '#60a5fa' : 'whiteAlpha.500'}
                       position="relative"
-                      _hover={{ bg: active ? 'rgba(59,130,246,0.15)' : 'whiteAlpha.50', color: active ? '#60a5fa' : 'white' }}
-                      transition="all 0.15s ease"
+                      transition="background 0.15s, color 0.15s"
+                      style={{
+                        background: active ? 'rgba(59,130,246,0.14)' : 'transparent',
+                        color: active ? '#93c5fd' : 'rgba(255,255,255,0.55)',
+                      }}
+                      _hover={{
+                        background: active ? 'rgba(59,130,246,0.18)' : 'rgba(255,255,255,0.06)',
+                        color: active ? '#93c5fd' : '#ffffff',
+                      } as object}
                     >
                       {active && (
                         <Box
                           position="absolute"
-                          left={0}
-                          top="20%"
-                          bottom="20%"
+                          left="1px"
+                          top="18%"
+                          bottom="18%"
                           w="3px"
-                          bg="blue.400"
                           borderRadius="full"
+                          style={{ background: '#3b82f6' }}
                         />
                       )}
-                      <Box flexShrink={0} display="flex" alignItems="center">
+                      <Box flexShrink={0} style={{ display: 'flex', alignItems: 'center' }}>
                         <Icon size={17} />
                       </Box>
                       {!isCollapsed && (
@@ -247,6 +273,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                           whiteSpace="nowrap"
                           textOverflow="ellipsis"
                           letterSpacing="-0.01em"
+                          color="inherit"
                         >
                           {item.label}
                         </Text>
@@ -261,7 +288,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       <Box>{navItem}</Box>
                     </Tooltip.Trigger>
                     <Tooltip.Positioner>
-                      <Tooltip.Content fontSize="sm">{item.label}</Tooltip.Content>
+                      <Tooltip.Content fontSize="xs">{item.label}</Tooltip.Content>
                     </Tooltip.Positioner>
                   </Tooltip.Root>
                 ) : (
@@ -271,53 +298,67 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             </Box>
           )
         })}
-      </VStack>
-
-      {/* User */}
-      <Box
-        borderTop="1px solid"
-        borderColor="whiteAlpha.50"
-        p={isCollapsed ? 2 : 3}
-      >
-        <Flex align="center" gap={2.5} justify={isCollapsed ? 'center' : 'flex-start'}>
-          <Avatar.Root size="sm" flexShrink={0}>
-            <Avatar.Fallback
-              bg="blue.600"
-              color="white"
-              fontSize="xs"
-              fontWeight="700"
-            >
-              {user?.name?.slice(0, 2).toUpperCase()}
-            </Avatar.Fallback>
-          </Avatar.Root>
-          {!isCollapsed && (
-            <Box minW={0} flex={1} overflow="hidden">
-              <Text
-                fontSize="sm"
-                fontWeight="600"
-                color="white"
-                overflow="hidden"
-                whiteSpace="nowrap"
-                textOverflow="ellipsis"
-                letterSpacing="-0.01em"
-                lineHeight="1.3"
-              >
-                {user?.name}
-              </Text>
-              <Text
-                fontSize="11px"
-                color="whiteAlpha.400"
-                overflow="hidden"
-                whiteSpace="nowrap"
-                textOverflow="ellipsis"
-                lineHeight="1.3"
-              >
-                {ROLE_LABELS[user?.role ?? ''] ?? user?.role}
-              </Text>
-            </Box>
-          )}
-        </Flex>
       </Box>
-    </Flex>
+
+      {/* ── Footer (user info) ── */}
+      <Flex
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        h={`${FOOTER_H}px`}
+        align="center"
+        px={isCollapsed ? 2 : 3}
+        justify={isCollapsed ? 'center' : 'flex-start'}
+        gap={2.5}
+        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <Flex
+          w="32px"
+          h="32px"
+          borderRadius="lg"
+          align="center"
+          justify="center"
+          flexShrink={0}
+          style={{
+            background: '#1e293b',
+            color: '#94a3b8',
+            fontSize: '11px',
+            fontWeight: '700',
+            letterSpacing: '0.02em',
+            userSelect: 'none',
+          }}
+        >
+          {initials}
+        </Flex>
+
+        {!isCollapsed && (
+          <Box minW={0} flex={1} overflow="hidden">
+            <Text
+              fontSize="sm"
+              fontWeight="600"
+              overflow="hidden"
+              whiteSpace="nowrap"
+              textOverflow="ellipsis"
+              letterSpacing="-0.01em"
+              lineHeight="1.35"
+              style={{ color: '#ffffff' }}
+            >
+              {user?.name}
+            </Text>
+            <Text
+              fontSize="11px"
+              overflow="hidden"
+              whiteSpace="nowrap"
+              textOverflow="ellipsis"
+              lineHeight="1.35"
+              style={{ color: 'rgba(255,255,255,0.38)' }}
+            >
+              {ROLE_LABELS[user?.role ?? ''] ?? user?.role}
+            </Text>
+          </Box>
+        )}
+      </Flex>
+    </Box>
   )
 }
