@@ -60,22 +60,41 @@ export function CashFlowPage() {
         }
       />
 
-      <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4} mb={6}>
+      <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4} mb={5}>
         {[
-          { label: 'Previsto Entradas', value: summary.previsto_entrada, color: 'green.500' },
-          { label: 'Previsto Saídas', value: summary.previsto_saida, color: 'red.500' },
-          { label: 'Realizado Entradas', value: summary.realizado_entrada, color: 'teal.500' },
-          { label: 'Realizado Saídas', value: summary.realizado_saida, color: 'orange.500' },
+          { label: 'Previsto Entradas',   value: summary.previsto_entrada,  color: 'green.500'  },
+          { label: 'Previsto Saídas',     value: summary.previsto_saida,    color: 'red.500'    },
+          { label: 'Realizado Entradas',  value: summary.realizado_entrada, color: 'teal.500'   },
+          { label: 'Realizado Saídas',    value: summary.realizado_saida,   color: 'orange.500' },
         ].map(({ label, value, color }) => (
-          <Box key={label} bg="card.bg" borderRadius="xl" p={4} border="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }}>
-            <Text fontSize="xs" color="gray.500" mb={1}>{label}</Text>
-            {isLoading ? <Skeleton h="24px" w="120px" borderRadius="md" /> : <Text fontSize="xl" fontWeight="700" color={color}>{formatCurrency(value)}</Text>}
+          <Box
+            key={label}
+            bg="card.bg"
+            borderRadius="2xl"
+            p={5}
+            border="1px solid"
+            borderColor="card.border"
+            boxShadow="0 1px 3px rgba(0,0,0,0.05)"
+          >
+            <Flex align="center" gap={2} mb={2}>
+              <Box w="8px" h="8px" borderRadius="full" bg={color} />
+              <Text fontSize="11px" color="gray.500" fontWeight="600" textTransform="uppercase" letterSpacing="wider">{label}</Text>
+            </Flex>
+            {isLoading
+              ? <Skeleton h="28px" w="120px" borderRadius="lg" />
+              : <Text fontSize="xl" fontWeight="800" color={color} letterSpacing="-0.03em">{formatCurrency(value)}</Text>
+            }
           </Box>
         ))}
       </Grid>
 
-      <Box bg="card.bg" borderRadius="xl" p={6} border="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }} mb={6}>
-        <Text fontWeight="600" mb={4}>Fluxo de Caixa — {period === 'monthly' ? `${MONTHS[Number(month) - 1]?.label} ${year}` : year}</Text>
+      <Box bg="card.bg" borderRadius="2xl" p={6} border="1px solid" borderColor="card.border" mb={4} boxShadow="0 1px 3px rgba(0,0,0,0.05)">
+        <Flex justify="space-between" align="center" mb={5}>
+          <Box>
+            <Text fontWeight="700" letterSpacing="-0.02em">Fluxo de Caixa</Text>
+            <Text fontSize="xs" color="gray.500">{period === 'monthly' ? `${MONTHS[Number(month) - 1]?.label} ${year}` : year}</Text>
+          </Box>
+        </Flex>
         {isLoading ? <Skeleton h="300px" borderRadius="lg" /> : rows.length === 0 ? (
           <Flex align="center" justify="center" h="300px" color="gray.400"><Text>Sem dados para o período selecionado</Text></Flex>
         ) : (
@@ -99,27 +118,66 @@ export function CashFlowPage() {
         )}
       </Box>
 
-      <Box bg="card.bg" borderRadius="xl" border="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }} overflow="hidden">
-        <Flex p={4} borderBottom="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }}>
-          <Text fontWeight="600">Detalhamento</Text>
+      <Box
+        bg="card.bg"
+        borderRadius="2xl"
+        border="1px solid"
+        borderColor="card.border"
+        overflow="hidden"
+      >
+        <Flex p={5} borderBottom="1px solid" borderColor="card.border" align="center" justify="space-between">
+          <Box>
+            <Text fontWeight="700" letterSpacing="-0.02em">Detalhamento</Text>
+            <Text fontSize="xs" color="gray.500">Valores previstos e realizados por período</Text>
+          </Box>
         </Flex>
         <Box overflowX="auto">
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <thead><tr style={{ background: '#f8fafc' }}>{['Data/Mês', 'Prev. Entrada', 'Prev. Saída', 'Prev. Saldo', 'Real. Entrada', 'Real. Saída', 'Real. Saldo'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: '#6b7280', fontSize: 11, textTransform: 'uppercase' }}>{h}</th>)}</tr></thead>
-            <tbody>
+          <Box as="table" w="full" style={{ borderCollapse: 'collapse', fontSize: '13px' }}>
+            <Box as="thead">
+              <Box as="tr" bg="table.header">
+                {['Data/Mês', 'Prev. Entrada', 'Prev. Saída', 'Prev. Saldo', 'Real. Entrada', 'Real. Saída', 'Real. Saldo'].map(h => (
+                  <Box
+                    key={h}
+                    as="th"
+                    px={4}
+                    py={3}
+                    textAlign="left"
+                    fontSize="10px"
+                    fontWeight="700"
+                    color="gray.500"
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                  >
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
               {(rows as Record<string, unknown>[]).map((row, i) => (
-                <tr key={i} style={{ borderTop: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 500 }}>{String(row.date ?? row.month)}</td>
-                  <td style={{ padding: '10px 16px', color: '#22c55e' }}>{formatCurrency(Number(row.previsto_entrada))}</td>
-                  <td style={{ padding: '10px 16px', color: '#ef4444' }}>{formatCurrency(Number(row.previsto_saida))}</td>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: Number(row.previsto_saldo) >= 0 ? '#22c55e' : '#ef4444' }}>{formatCurrency(Number(row.previsto_saldo))}</td>
-                  <td style={{ padding: '10px 16px', color: '#14b8a6' }}>{formatCurrency(Number(row.realizado_entrada))}</td>
-                  <td style={{ padding: '10px 16px', color: '#f97316' }}>{formatCurrency(Number(row.realizado_saida))}</td>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: Number(row.realizado_saldo) >= 0 ? '#22c55e' : '#ef4444' }}>{formatCurrency(Number(row.realizado_saldo))}</td>
-                </tr>
+                <Box
+                  as="tr"
+                  key={i}
+                  borderTop="1px solid"
+                  borderColor="table.border"
+                  _hover={{ bg: 'table.row.hover' }}
+                  transition="background 0.1s"
+                >
+                  <Box as="td" px={4} py={3} fontWeight="600" fontSize="sm">{String(row.date ?? row.month)}</Box>
+                  <Box as="td" px={4} py={3} color="green.500" fontWeight="500" fontSize="sm">{formatCurrency(Number(row.previsto_entrada))}</Box>
+                  <Box as="td" px={4} py={3} color="red.500" fontWeight="500" fontSize="sm">{formatCurrency(Number(row.previsto_saida))}</Box>
+                  <Box as="td" px={4} py={3} fontWeight="700" fontSize="sm" color={Number(row.previsto_saldo) >= 0 ? 'green.500' : 'red.500'}>
+                    {formatCurrency(Number(row.previsto_saldo))}
+                  </Box>
+                  <Box as="td" px={4} py={3} color="teal.500" fontWeight="500" fontSize="sm">{formatCurrency(Number(row.realizado_entrada))}</Box>
+                  <Box as="td" px={4} py={3} color="orange.500" fontWeight="500" fontSize="sm">{formatCurrency(Number(row.realizado_saida))}</Box>
+                  <Box as="td" px={4} py={3} fontWeight="700" fontSize="sm" color={Number(row.realizado_saldo) >= 0 ? 'green.500' : 'red.500'}>
+                    {formatCurrency(Number(row.realizado_saldo))}
+                  </Box>
+                </Box>
               ))}
-            </tbody>
-          </table>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </>

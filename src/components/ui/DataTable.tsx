@@ -27,12 +27,41 @@ export function DataTable<T extends { id: number }>({
   search, onSearch, searchPlaceholder = 'Buscar...', actions, emptyText = 'Nenhum registro encontrado',
 }: DataTableProps<T>) {
   return (
-    <Box bg="card.bg" borderRadius="xl" border="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }} overflow="hidden">
+    <Box
+      bg="card.bg"
+      borderRadius="2xl"
+      border="1px solid"
+      borderColor="card.border"
+      overflow="hidden"
+      boxShadow="0 1px 3px rgba(0,0,0,0.05)"
+    >
       {(onSearch || actions) && (
-        <Flex p={4} gap={3} borderBottom="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }} wrap="wrap">
+        <Flex
+          p={4}
+          gap={3}
+          borderBottom="1px solid"
+          borderColor="card.border"
+          wrap="wrap"
+          align="center"
+        >
           {onSearch && (
-            <Flex align="center" gap={2} flex={1} minW="200px" maxW="360px" px={3} py={2} border="1px solid" borderColor="gray.200" _dark={{ borderColor: 'whiteAlpha.200' }} borderRadius="md" bg="gray.50">
-              <Search size={16} color="#9ca3af" />
+            <Flex
+              align="center"
+              gap={2}
+              flex={1}
+              minW="200px"
+              maxW="340px"
+              px={3}
+              py={2}
+              border="1px solid"
+              borderColor="gray.200"
+              _dark={{ borderColor: 'whiteAlpha.100', bg: 'whiteAlpha.30' }}
+              borderRadius="xl"
+              bg="gray.50"
+              transition="border-color 0.15s, box-shadow 0.15s"
+              _focusWithin={{ borderColor: 'blue.400', boxShadow: '0 0 0 3px rgba(59,130,246,0.1)' }}
+            >
+              <Search size={15} color="#9ca3af" />
               <Input
                 border="none"
                 bg="transparent"
@@ -52,9 +81,19 @@ export function DataTable<T extends { id: number }>({
       <Box overflowX="auto">
         <Table.Root size="sm">
           <Table.Header>
-            <Table.Row bg="gray.50" _dark={{ bg: 'whiteAlpha.50' }}>
+            <Table.Row bg="table.header">
               {columns.map((col) => (
-                <Table.ColumnHeader key={col.key} py={3} px={4} fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider" w={col.width}>
+                <Table.ColumnHeader
+                  key={col.key}
+                  py={3}
+                  px={4}
+                  fontSize="10px"
+                  fontWeight="700"
+                  color="gray.500"
+                  textTransform="uppercase"
+                  letterSpacing="wider"
+                  w={col.width}
+                >
                   {col.label}
                 </Table.ColumnHeader>
               ))}
@@ -66,7 +105,9 @@ export function DataTable<T extends { id: number }>({
               ? Array.from({ length: 5 }).map((_, i) => (
                   <Table.Row key={i}>
                     {columns.map((col) => (
-                      <Table.Cell key={col.key} py={3} px={4}><Skeleton h="20px" borderRadius="md" /></Table.Cell>
+                      <Table.Cell key={col.key} py={3.5} px={4}>
+                        <Skeleton h="18px" borderRadius="lg" />
+                      </Table.Cell>
                     ))}
                   </Table.Row>
                 ))
@@ -74,15 +115,23 @@ export function DataTable<T extends { id: number }>({
               ? (
                   <Table.Row>
                     <Table.Cell colSpan={columns.length}>
-                      <Center py={12} color="gray.400"><Text fontSize="sm">{emptyText}</Text></Center>
+                      <Center py={14} color="gray.400">
+                        <Text fontSize="sm">{emptyText}</Text>
+                      </Center>
                     </Table.Cell>
                   </Table.Row>
                 )
               : data.map((row) => (
-                  <Table.Row key={row.id} _hover={{ bg: 'gray.50', _dark: { bg: 'whiteAlpha.50' } }} transition="background 0.1s">
+                  <Table.Row
+                    key={row.id}
+                    _hover={{ bg: 'table.row.hover' }}
+                    transition="background 0.1s"
+                    borderTop="1px solid"
+                    borderColor="table.border"
+                  >
                     {columns.map((col) => (
-                      <Table.Cell key={col.key} py={3} px={4} fontSize="sm">
-                        {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '-')}
+                      <Table.Cell key={col.key} py={3.5} px={4} fontSize="sm">
+                        {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '—')}
                       </Table.Cell>
                     ))}
                   </Table.Row>
@@ -92,14 +141,37 @@ export function DataTable<T extends { id: number }>({
       </Box>
 
       {pagination && pagination.totalPages > 1 && (
-        <Flex align="center" justify="space-between" p={4} borderTop="1px solid" borderColor="gray.100" _dark={{ borderColor: 'whiteAlpha.100' }}>
-          <Text fontSize="xs" color="gray.500">{pagination.total} registro{pagination.total !== 1 ? 's' : ''}</Text>
+        <Flex
+          align="center"
+          justify="space-between"
+          px={4}
+          py={3}
+          borderTop="1px solid"
+          borderColor="card.border"
+        >
+          <Text fontSize="xs" color="gray.500" fontWeight="500">
+            {pagination.total} registro{pagination.total !== 1 ? 's' : ''}
+          </Text>
           <Flex gap={1} align="center">
-            <Button size="xs" variant="ghost" disabled={pagination.page <= 1} onClick={() => onPageChange?.(pagination.page - 1)}>
+            <Button
+              size="xs"
+              variant="ghost"
+              borderRadius="lg"
+              disabled={pagination.page <= 1}
+              onClick={() => onPageChange?.(pagination.page - 1)}
+            >
               <ChevronLeft size={14} />
             </Button>
-            <Text fontSize="sm" px={3}>Pág. {pagination.page} de {pagination.totalPages}</Text>
-            <Button size="xs" variant="ghost" disabled={pagination.page >= pagination.totalPages} onClick={() => onPageChange?.(pagination.page + 1)}>
+            <Text fontSize="xs" px={2} color="gray.600" _dark={{ color: 'gray.400' }} fontWeight="500">
+              {pagination.page} / {pagination.totalPages}
+            </Text>
+            <Button
+              size="xs"
+              variant="ghost"
+              borderRadius="lg"
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => onPageChange?.(pagination.page + 1)}
+            >
               <ChevronRight size={14} />
             </Button>
           </Flex>

@@ -37,8 +37,8 @@ export function AppLayout() {
       />
 
       <Box
-        ml={sidebarCollapsed ? '64px' : '260px'}
-        transition="margin-left 0.2s ease"
+        ml={sidebarCollapsed ? '68px' : '260px'}
+        transition="margin-left 0.22s cubic-bezier(.4,0,.2,1)"
         minH="100vh"
         display="flex"
         flexDirection="column"
