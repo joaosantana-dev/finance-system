@@ -45,7 +45,7 @@ export function AppLayout() {
       >
         <Navbar sidebarCollapsed={sidebarCollapsed} title={title} />
 
-        <Box as="main" flex={1} pt="64px" p={6}>
+        <Box as="main" flex={1} px={6} pb={6} pt="88px">
           <Outlet />
         </Box>
       </Box>

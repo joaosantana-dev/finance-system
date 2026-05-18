@@ -5,6 +5,20 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { dashboardApi } from '@/services/finance'
 import { formatCurrency, formatDate } from '@/utils/format'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { useAuth } from '@/hooks/useAuth'
+
+function getGreeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Bom dia'
+  if (h < 18) return 'Boa tarde'
+  return 'Boa noite'
+}
+
+function getFormattedDate() {
+  return new Date().toLocaleDateString('pt-BR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  })
+}
 
 function StatCard({ label, value, sub, positive, icon: Icon, gradient, iconColor, isLoading }: {
   label: string
@@ -96,6 +110,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 }
 
 export function DashboardPage() {
+  const { user } = useAuth()
   const { data: summary, isLoading: loadingSummary } = useQuery({ queryKey: ['dashboard-summary'], queryFn: dashboardApi.getSummary })
   const { data: monthlyFlow = [], isLoading: loadingFlow } = useQuery({ queryKey: ['dashboard-monthly-flow'], queryFn: dashboardApi.getMonthlyFlow })
   const { data: expensesByCategory = [], isLoading: loadingCat } = useQuery({ queryKey: ['dashboard-expenses-cat'], queryFn: dashboardApi.getExpensesByCategory })
@@ -109,16 +124,36 @@ export function DashboardPage() {
     { label: 'Vence em 7 dias',   value: formatCurrency(summary?.dueSoonPayable ?? 0),   sub: 'atenção necessária',  icon: Clock,       gradient: '#faf5ff', iconColor: '#a855f7' },
   ]
 
+  const firstName = user?.name?.split(' ')[0] ?? ''
+
   return (
     <Box>
-      <Box mb={7}>
-        <Text fontSize="2xl" fontWeight="800" letterSpacing="-0.03em" color="gray.900" _dark={{ color: 'white' }}>
-          Dashboard
+      {/* Welcome bar */}
+      <Flex justify="space-between" align="flex-end" mb={6}>
+        <Box>
+          <Text
+            fontSize="xl"
+            fontWeight="800"
+            letterSpacing="-0.03em"
+            color="gray.900"
+            _dark={{ color: 'white' }}
+            lineHeight="1.2"
+          >
+            {getGreeting()}, {firstName}
+          </Text>
+          <Text fontSize="sm" color="gray.400" mt={0.5} letterSpacing="-0.01em">
+            {getFormattedDate()}
+          </Text>
+        </Box>
+        <Text
+          fontSize="xs"
+          color="gray.400"
+          fontWeight="500"
+          display={{ base: 'none', md: 'block' }}
+        >
+          {user?.company_name}
         </Text>
-        <Text fontSize="sm" color="gray.500" mt={0.5}>
-          Visão geral das finanças corporativas
-        </Text>
-      </Box>
+      </Flex>
 
       <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(5, 1fr)' }} gap={4} mb={5}>
         {cards.map((c) => <StatCard key={c.label} {...c} isLoading={loadingSummary} />)}
